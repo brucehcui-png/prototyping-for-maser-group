@@ -69,8 +69,7 @@ export default function CartridgePile({
                 className="flex-1 h-7 flex items-center justify-between px-2 text-[8px] font-bold text-white shadow-inner border border-[#1a191d] overflow-hidden rounded-xs"
                 style={{ backgroundColor: game.labelColor }}
               >
-                <div className="flex items-center gap-1.5 truncate">
-                  <span className="text-[11px] shrink-0">{game.pixelArtIcon}</span>
+                <div className="flex items-center truncate">
                   <span className="truncate tracking-wide drop-shadow-[0_1px_1px_rgba(0,0,0,0.9)] text-[7px] sm:text-[8px]">
                     {game.title}
                   </span>
@@ -79,7 +78,7 @@ export default function CartridgePile({
                 {/* Current game inserted badge */}
                 {isCurrent && (
                   <span className="text-[6px] text-yellow-300 ml-1.5 shrink-0 bg-black/80 px-1 py-0.5 rounded-xs font-bold border border-yellow-500/50">
-                    IN NES
+                    CURRENT
                   </span>
                 )}
               </div>

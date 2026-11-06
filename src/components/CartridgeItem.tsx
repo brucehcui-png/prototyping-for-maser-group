@@ -44,8 +44,7 @@ export default function CartridgeItem({
           className="flex-1 h-7 md:h-8 flex items-center justify-between px-2 text-[10px] md:text-xs font-bold text-white shadow-inner overflow-hidden border border-neutral-900"
           style={{ backgroundColor: game.labelColor }}
         >
-          <div className="flex items-center gap-1.5 truncate">
-            <span className="text-sm shrink-0">{game.pixelArtIcon}</span>
+          <div className="flex items-center truncate">
             <span className="truncate tracking-wider drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">
               {game.title}
             </span>
@@ -110,10 +109,10 @@ export default function CartridgeItem({
           <CartridgeArt gameId={game.id} />
         </div>
 
-        {/* Prominent Game Title & Icon */}
+        {/* Prominent Game Title */}
         <div className="text-center space-y-0.5">
           <div className="text-[10px] sm:text-[11px] font-bold tracking-wider text-yellow-300 drop-shadow-[0_2px_2px_rgba(0,0,0,1)] truncate">
-            {game.pixelArtIcon} {game.title}
+            {game.title}
           </div>
         </div>
       </div>
