@@ -356,6 +356,10 @@ export default function MarioInvadersGame({
   onEarnPoints,
 }: GameComponentProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const onEarnPointsRef = useRef(onEarnPoints);
+  onEarnPointsRef.current = onEarnPoints;
+  const isMutedRef = useRef(isMuted);
+  isMutedRef.current = isMuted;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -419,7 +423,7 @@ export default function MarioInvadersGame({
       duration: number,
       gainStart: number
     ) => {
-      if (isMuted) return;
+      if (isMutedRef.current) return;
       initAudio();
       if (!audioCtx) return;
       try {
@@ -441,7 +445,7 @@ export default function MarioInvadersGame({
     };
 
     const playNoise = (duration: number, gainStart: number) => {
-      if (isMuted) return;
+      if (isMutedRef.current) return;
       initAudio();
       if (!audioCtx) return;
       try {
@@ -623,7 +627,8 @@ export default function MarioInvadersGame({
       lives = 3;
       player.x = 228;
       player.invincibleTimer = 0;
-      player.shootCooldown = 0;
+      player.shootCooldown = 0.25;
+      justPressed.clear();
       playerBullets = [];
       enemyBullets = [];
       particles = [];
@@ -848,9 +853,7 @@ export default function MarioInvadersGame({
                   }
                 }
                 // Reward player points in arcade
-                if (onEarnPoints) {
-                  onEarnPoints(e.points);
-                }
+                onEarnPointsRef.current?.(e.points);
                 playNoise(0.18, 0.25);
                 triggerExplosion(e.x + e.w / 2, e.y + e.h / 2, 14);
                 popups.push({ x: e.x, y: e.y, text: `+${e.points}`, life: 0.7 });
@@ -1107,7 +1110,7 @@ export default function MarioInvadersGame({
         audioCtx.close().catch(() => {});
       }
     };
-  }, [isMuted, onEarnPoints]);
+  }, []);
 
   return (
     <div className="relative w-full h-full bg-black flex items-center justify-center overflow-hidden select-none font-pixel">

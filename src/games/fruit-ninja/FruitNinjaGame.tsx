@@ -7,7 +7,7 @@ import { playSound } from "@/components/AudioEffects";
 const CANVAS_W = 256;
 const CANVAS_H = 224;
 const GRAVITY = 0.115;
-const MAX_MISSED = 3;
+const MAX_MISSED = 5;
 
 interface FruitType {
   name: string;
@@ -142,6 +142,7 @@ export default function FruitNinjaGame({ onEarnPoints }: GameComponentProps) {
   const [gamePhase, setGamePhase] = useState<"title" | "playing" | "gameover">(
     "title"
   );
+  const [heartsLeft, setHeartsLeft] = useState<number>(MAX_MISSED);
   const [finalStats, setFinalStats] = useState({
     score: 0,
     highScore: 0,
@@ -172,7 +173,7 @@ export default function FruitNinjaGame({ onEarnPoints }: GameComponentProps) {
     screenFlash: 0,
     shakeTimer: 0,
     hudFlashTimer: 0,
-    gameOverReason: "" as "BOMB EXPLODED!" | "3 FRUITS MISSED!" | "",
+    gameOverReason: "" as "BOMB EXPLODED!" | "ALL 5 HEARTS LOST!" | "",
   });
 
   const startGame = useCallback(() => {
@@ -196,12 +197,13 @@ export default function FruitNinjaGame({ onEarnPoints }: GameComponentProps) {
     s.shakeTimer = 0;
     s.hudFlashTimer = 0;
     s.gameOverReason = "";
+    setHeartsLeft(MAX_MISSED);
     setGamePhase("playing");
     playSound("coin");
   }, []);
 
   const triggerGameOver = useCallback(
-    (reason: "BOMB EXPLODED!" | "3 FRUITS MISSED!") => {
+    (reason: "BOMB EXPLODED!" | "ALL 5 HEARTS LOST!") => {
       const s = stateRef.current;
       if (s.phase !== "playing") return;
       s.phase = "gameover";
@@ -494,38 +496,14 @@ export default function FruitNinjaGame({ onEarnPoints }: GameComponentProps) {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const s = stateRef.current;
       if (e.key === "r" || e.key === "R") {
         e.preventDefault();
         startGame();
-        return;
-      }
-      if (e.key === " " || e.key === "Enter") {
-        e.preventDefault();
-        if (s.phase !== "playing") {
-          startGame();
-          return;
-        }
-        // Keyboard Katana Whirlwind Slash across the screen (avoids bombs!)
-        playSound("blip");
-        const yMid = CANVAS_H * 0.42;
-        for (let x = 20; x <= CANVAS_W - 20; x += 14) {
-          s.blade.push({
-            x,
-            y: yMid + Math.sin(x * 0.04) * 28,
-            life: 10,
-          });
-        }
-        for (const f of s.fruits) {
-          if (!f.sliced && !f.type.isBomb && f.y < CANVAS_H - 12) {
-            sliceFruit(f);
-          }
-        }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [sliceFruit, startGame]);
+  }, [startGame]);
 
   useEffect(() => {
     let animId: number;
@@ -627,55 +605,49 @@ export default function FruitNinjaGame({ onEarnPoints }: GameComponentProps) {
         ctx.fillRect(x, 24, 2, CANVAS_H - 24);
       }
 
-      // 2. Top Arcade HUD Bar with Flash Feedback
-      ctx.fillStyle = s.hudFlashTimer > 0 ? "#064e3b" : "#090d16";
-      ctx.fillRect(0, 0, CANVAS_W, 22);
+      // 2. Top Arcade HUD Bar (positioned at y = 40..64 so it sits cleanly inside the CRT visible viewport)
+      ctx.fillStyle = s.hudFlashTimer > 0 ? "#064e3b" : "rgba(9, 13, 22, 0.88)";
+      ctx.fillRect(0, 0, CANVAS_W, 64);
       ctx.fillStyle = s.hudFlashTimer > 0 ? "#34d399" : "#eab308";
-      ctx.fillRect(0, 21, CANVAS_W, 2);
+      ctx.fillRect(0, 63, CANVAS_W, 2);
       if (s.hudFlashTimer > 0) s.hudFlashTimer--;
 
       ctx.font = "7px 'Press Start 2P', monospace";
-      ctx.fillStyle = "#facc15";
-      ctx.fillText(`SCORE:${s.score}`, 6, 14);
-
       ctx.fillStyle = s.hudFlashTimer > 0 ? "#ffffff" : "#4ade80";
-      ctx.fillText(`+${s.earnedPts}PTS`, 104, 14);
+      ctx.fillText(`+${s.earnedPts}PTS`, 104, 56);
 
-      // Missed Fruits X X X indicator
-      for (let i = 0; i < MAX_MISSED; i++) {
-        ctx.fillStyle = i < s.missed ? "#ef4444" : "#374151";
-        ctx.fillText("X", CANVAS_W - 40 + i * 13, 14);
-      }
+      ctx.fillStyle = "#facc15";
+      ctx.fillText(`SCORE:${s.score}`, 172, 56);
 
       // 3. Game State Logic
       if (s.phase === "title") {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.72)";
-        ctx.fillRect(16, 36, CANVAS_W - 32, 156);
+        ctx.fillStyle = "rgba(0, 0, 0, 0.76)";
+        ctx.fillRect(16, 68, CANVAS_W - 32, 112);
         ctx.strokeStyle = "#facc15";
         ctx.lineWidth = 2;
-        ctx.strokeRect(16, 36, CANVAS_W - 32, 156);
+        ctx.strokeRect(16, 68, CANVAS_W - 32, 112);
 
-        drawPixelFruit(ctx, CANVAS_W / 2 - 40, 66, FRUIT_TYPES[0]);
-        drawPixelFruit(ctx, CANVAS_W / 2, 66, FRUIT_TYPES[5]);
-        drawPixelFruit(ctx, CANVAS_W / 2 + 40, 66, BOMB_TYPE);
+        drawPixelFruit(ctx, CANVAS_W / 2 - 40, 88, FRUIT_TYPES[0]);
+        drawPixelFruit(ctx, CANVAS_W / 2, 88, FRUIT_TYPES[5]);
+        drawPixelFruit(ctx, CANVAS_W / 2 + 40, 88, BOMB_TYPE);
 
         ctx.fillStyle = "#4ade80";
-        ctx.font = "11px 'Press Start 2P', monospace";
-        ctx.fillText("PIXEL NINJA", 66, 102);
+        ctx.font = "10px 'Press Start 2P', monospace";
+        ctx.fillText("PIXEL NINJA", 72, 116);
 
         ctx.fillStyle = "#f97316";
-        ctx.font = "7px 'Press Start 2P', monospace";
-        ctx.fillText("FRUIT SLASHER", 82, 116);
+        ctx.font = "6px 'Press Start 2P', monospace";
+        ctx.fillText("FRUIT SLASHER", 88, 128);
 
         ctx.fillStyle = "#e5e7eb";
         ctx.font = "6px 'Press Start 2P', monospace";
-        ctx.fillText("SWIPE MOUSE TO SLICE!", 64, 138);
-        ctx.fillText("AVOID BOMBS! MAX 3 MISS", 58, 152);
+        ctx.fillText("SWIPE MOUSE TO SLICE!", 64, 144);
+        ctx.fillText("AVOID BOMBS! 5 HEARTS", 62, 156);
 
         if (Math.floor(Date.now() / 400) % 2 === 0) {
           ctx.fillStyle = "#facc15";
-          ctx.font = "7px 'Press Start 2P', monospace";
-          ctx.fillText("CLICK OR SPACE TO START", 46, 176);
+          ctx.font = "6px 'Press Start 2P', monospace";
+          ctx.fillText("CLICK SCREEN TO START", 62, 172);
         }
       } else if (s.phase === "playing") {
         s.elapsedFrames++;
@@ -701,7 +673,7 @@ export default function FruitNinjaGame({ onEarnPoints }: GameComponentProps) {
               playSound("tetrisClear");
               s.texts.push({
                 x: Math.max(12, CANVAS_W / 2 - 64),
-                y: 62,
+                y: 82,
                 text: `🔥COMBO x${s.comboCount}! +${bonus}PTS`,
                 color: "#facc15",
                 life: 48,
@@ -731,16 +703,17 @@ export default function FruitNinjaGame({ onEarnPoints }: GameComponentProps) {
           if (f.y > CANVAS_H + 24 && f.peaked) {
             if (!f.sliced && !f.type.isBomb) {
               s.missed += 1;
+              setHeartsLeft(Math.max(0, MAX_MISSED - s.missed));
               playSound("blockHit");
               s.texts.push({
                 x: Math.max(16, Math.min(CANVAS_W - 48, f.x - 12)),
-                y: CANVAS_H - 14,
-                text: "MISS!",
+                y: 168,
+                text: "-1 ♥",
                 color: "#ef4444",
                 life: 32,
               });
               if (s.missed >= MAX_MISSED) {
-                triggerGameOver("3 FRUITS MISSED!");
+                triggerGameOver("ALL 5 HEARTS LOST!");
               }
             }
             s.fruits.splice(i, 1);
@@ -871,6 +844,25 @@ export default function FruitNinjaGame({ onEarnPoints }: GameComponentProps) {
         className="w-full h-full object-contain touch-none"
         style={{ imageRendering: "pixelated" }}
       />
+
+      {/* High-Visibility 5 Hearts Overlay Moved Down into Visible Upper-Left of TV Screen */}
+      <div className="absolute top-[24%] left-5 z-10 flex items-center gap-1.5 bg-neutral-950/95 border-2 border-red-500 px-2.5 py-1 rounded shadow-[0_0_12px_rgba(239,68,68,0.85)] pointer-events-none">
+        {Array.from({ length: MAX_MISSED }).map((_, idx) => {
+          const alive = idx < heartsLeft;
+          return (
+            <span
+              key={idx}
+              className={`text-sm sm:text-base leading-none transition-all duration-200 ${
+                alive
+                  ? "text-red-500 drop-shadow-[0_0_6px_rgba(239,68,68,0.95)] scale-100"
+                  : "text-neutral-700 scale-90 opacity-50"
+              }`}
+            >
+              ♥
+            </span>
+          );
+        })}
+      </div>
 
       {/* Interactive Game Over Modal Overlay with Prominent Points Feedback & Restart Button */}
       {gamePhase === "gameover" && (

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import Image from "next/image";
 import { GAMES_REGISTRY } from "@/games/registry";
 import { GameDefinition } from "@/games/types";
@@ -80,7 +80,7 @@ export default function RetroLivingRoomPage() {
     }
   };
 
-  const handleEarnPoints = (pts: number) => {
+  const handleEarnPoints = useCallback((pts: number) => {
     if (pts <= 0) return;
     setPlayerPoints((prev) => prev + pts);
     setRecentPointsGain({ amount: pts, id: Date.now() + Math.random() });
@@ -88,10 +88,13 @@ export default function RetroLivingRoomPage() {
     setTimeout(() => {
       setPointsHighlight(false);
     }, 650);
-  };
+  }, []);
 
   return (
-    <main className="relative h-screen w-screen overflow-hidden select-none bg-neutral-950 flex flex-col justify-between font-pixel">
+    <main
+      translate="no"
+      className="notranslate relative h-screen w-screen overflow-hidden select-none bg-neutral-950 flex flex-col justify-between font-pixel"
+    >
       {/* ======================================================================
           Cozy Room Background (Warm cream wall with art & doodles, purple cutting mat desk)
           ====================================================================== */}
