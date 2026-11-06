@@ -77,7 +77,7 @@ export const GAMES_REGISTRY: GameDefinition[] = [
   {
     id: "mario-invaders",
     title: "Mario Invaders",
-    author: "Zhongyue",
+    author: "Retro Arcade",
     year: 1986,
     genre: "Space Shooter",
     description:

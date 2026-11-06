@@ -31,7 +31,7 @@ export const INITIAL_SHOP_ITEMS: ShopItem[] = [
     description:
       "Pilot Mario's red fighter plane, blast waves of Goombas, Koopas, and Piranha Plants in 16-bit retro sky patrol!",
     price: 300,
-    author: "Zhongyue",
+    author: "Retro Arcade",
     labelColor: "#b91c1c",
     labelBadge: "NES-MI-USA",
     isUnlocked: false,
@@ -48,7 +48,7 @@ export const INITIAL_SHOP_ITEMS: ShopItem[] = [
     title: "Super Pixel Bros.",
     genre: "Platformer",
     description:
-      "Control Justin! Headbutt question blocks, stomp Goomba mushrooms, climb the stairs, and reach the flagpole!",
+      "Headbutt question blocks, stomp Goomba mushrooms, climb the stairs, and reach the flagpole!",
     price: 300,
     author: "Retro Arcade",
     labelColor: "#b91c1c",
@@ -56,7 +56,7 @@ export const INITIAL_SHOP_ITEMS: ShopItem[] = [
     isUnlocked: true,
     storeName: "Super Pixel Bros.",
     storeSubtitle: "Platformer",
-    clerkName: "Justin",
+    clerkName: "Mario",
     clerkGreeting:
       "Let's-a-go! Ready for mushroom stomping and flagpole sliding?",
     accentColor: "#f59e0b",

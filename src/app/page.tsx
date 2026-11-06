@@ -96,19 +96,19 @@ export default function RetroLivingRoomPage() {
       className="notranslate relative h-screen w-screen overflow-hidden select-none bg-neutral-950 flex flex-col justify-between font-pixel"
     >
       {/* ======================================================================
-          Cozy Room Background (Warm cream wall with art & doodles, purple cutting mat desk)
+          Cozy Room Background (16-bit Retro Pixel Art Studio Room)
           ====================================================================== */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <Image
-          src="/images/retro_room_bg.jpg"
-          alt="Cozy retro creative studio room with lilac cutting mat desk and warm doodle wall"
+          src="/images/retro_room_pixel_bg.jpg"
+          alt="Cozy retro pixel art studio room with lilac cutting mat desk, Mario artwork, and warm doodle wall"
           fill
           priority
           sizes="100vw"
-          className="object-cover object-center filter brightness-[0.95] contrast-[1.02]"
+          className="object-cover object-center filter brightness-[0.98] contrast-[1.02]"
         />
         {/* Subtle warm ambient vignette */}
-        <div className="absolute inset-0 bg-radial-at-c from-transparent via-transparent to-black/35" />
+        <div className="absolute inset-0 bg-radial-at-c from-transparent via-transparent to-black/30" />
       </div>
 
       {/* ======================================================================
