@@ -91,7 +91,10 @@ export default function RetroLivingRoomPage() {
   };
 
   return (
-    <main className="relative h-screen w-screen overflow-hidden select-none bg-neutral-950 flex flex-col justify-between font-pixel">
+    <main
+      translate="no"
+      className="notranslate relative h-screen w-screen overflow-hidden select-none bg-neutral-950 flex flex-col justify-between font-pixel"
+    >
       {/* ======================================================================
           Cozy Room Background (Warm cream wall with art & doodles, purple cutting mat desk)
           ====================================================================== */}
